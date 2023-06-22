@@ -18,12 +18,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post("/register", function(Request $request) {
+Route::post("/register", function (Request $request) {
     $request->validate([
         "email" => "required|string|email|unique:users",
         "name" => "required|string",
         "password" => "required|string|min:6"
     ]);
+
+
+    info("[REGISTER]", $request->all());
 
     $user = User::create([
         "email" => $request->email,
@@ -55,6 +58,16 @@ Route::post('/login', function (Request $request) {
         "message" => "Usuário inválido"
     ]);
 });
+
+Route::middleware('auth:sanctum')->get('/user/profile_fake', function (Request $request) {
+    $user= User::find($request->user()->id)->toArray();
+
+    info("[/user/profile_fake]", $user);
+
+    return response()->json($user);
+});
+
+
 
 Route::middleware('auth:sanctum')->get('/user/profile', function (Request $request) {
     return $request->user();
